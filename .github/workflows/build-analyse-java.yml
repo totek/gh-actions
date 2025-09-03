@@ -1,0 +1,17 @@
+name: build-analyse-java
+on:
+  workflow_dispatch:
+
+jobs:
+  build-analyse:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      checks: write
+    defaults:
+      run:
+        # Set the working directory to the java-app directory
+        # works only for the shell.
+        working-directory: java-app
+    steps:
+      - uses: ./.github/actions/build-test-analyse
