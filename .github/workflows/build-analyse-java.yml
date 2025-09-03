@@ -2,7 +2,7 @@ name: build-analyse-java
 on:
   workflow_dispatch:
     inputs:
-      skip-test:
+      skip-tests:
         description: 'Skip tests'
         required: false
         type: boolean
@@ -24,4 +24,4 @@ jobs:
       - uses: ./.github/actions/build-test-analyse
         with:
           working-directory: 'java-app'
-          skip-test: ${{ github.event.inputs.skip-test }}
+          skip-tests: ${{ github.event.inputs.skip-tests }}
