@@ -14,4 +14,5 @@ jobs:
         # works only for the shell.
         working-directory: java-app
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/build-test-analyse
