@@ -1,0 +1,52 @@
+name: build-test-analyse
+author: tpiontek
+description: build-test-analyse
+
+inputs:
+  jdk-version:
+    description: 'JDK version'
+    required: false
+    default: '21'
+  jdk-flavor:
+    description: 'JDK flavor'
+    required: false
+    default: 'temurin'
+  working-directory:
+    description: 'Working directory'
+    required: false
+    default: ''
+  skip-tests:
+    description: 'Skipping tests'
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version:  ${{ inputs.jdk-version }}
+        distribution:  ${{ inputs.jdk-flavor }}
+        cache: maven
+    - name: Run Checkstyle Analysis
+      run: mvn checkstyle:checkstyle
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+    - name: Upload Checkstyle Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: checkstyle-report
+        path: ${{ inputs.working-directory != '' && format('{0}/target//checkstyle-result.xml', inputs.working-directory) || 'target/checkstyle-result.xml' }}
+        retention-days: 15
+    - name: Run Unit Tests
+      if: ${{ inputs.skip-tests == 'false' }}
+      run: mvn test
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+    - name: Publish Test Report
+      uses: mikepenz/action-junit-report@v5
+      if: always()
+      with:
+        report_paths: '**/TEST-*.xml'
